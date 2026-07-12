@@ -1,0 +1,3 @@
+[submodule "verif/lib/UVM"]
+	path = verif/lib/UVM
+	url = git@github.com:nitronis/UVM.git
