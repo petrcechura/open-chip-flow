@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 from abc import ABC, abstractmethod
 
-from tasks_py.task_verif import *
+from scripts.task_verif import *
 
 class Task(ABC):
     """Base class for all tasks."""
