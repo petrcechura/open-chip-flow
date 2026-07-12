@@ -1,0 +1,2 @@
+files:
+  - "i2c_agent/i2c_agent.yaml @ files"

@@ -1,0 +1,12 @@
+files:
+  - "i2c_agent.svh"
+  - "i2c_if.sv"
+  - "i2c_pl_sequencer.svh"
+  - "i2c_pl_seq_item.svh"
+  - "i2c_pl_monitor.svh"
+  - "i2c_ll_sequencer.svh"
+  - "i2c_ll_seq_item.svh"
+  - "i2c_l2p_sequence.svh"
+  - "i2c_driver.svh"
+  - "i2c_agent_pkg.sv"
+  - "i2c_agent_config.svh"
