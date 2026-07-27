@@ -13,6 +13,8 @@ class Task(ABC):
     help: str = ""
 
     YAML_PATH_DELIMITER = "/"
+    REPORT_HEADER_LEN = 70
+    REPORT_HEADER_CHAR = '#'
 
     @classmethod
     def register(cls, subparsers: argparse._SubParsersAction):
@@ -25,6 +27,27 @@ class Task(ABC):
 
         cls.add_arguments(parser)
         parser.set_defaults(task_cls=cls)
+
+    @classmethod
+    def report_info(cls, txt : str, severity : int = 0):
+        _prefix = '<OPF> INFO:'
+
+        match severity:
+            case 0: 
+                print(_prefix + ' ' + txt)
+            case 1:
+                t = _prefix + ' ' + txt
+                print('')
+                print(cls.REPORT_HEADER_CHAR * cls.REPORT_HEADER_LEN)
+                print(_prefix + ' ' + txt)
+                print(cls.REPORT_HEADER_CHAR * cls.REPORT_HEADER_LEN)
+                print('')
+
+    @classmethod
+    def report_error(cls, txt : str):
+        _prefix = '<OPF> ERROR:'
+        print(_prefix + ' ' + txt)
+        exit(1)
 
     @classmethod
     def get_yaml_node(
@@ -46,11 +69,15 @@ class Task(ABC):
 
         # Aux. class definition for the !include tag
         class _Include:
-            """Represents a !include YAML tag."""
-
-            def __init__(self, file: str, path: str = ""):
+            def __init__(
+                self,
+                file: str,
+                path: str = "",
+                basedir_expand: bool = True,
+            ):
                 self.file = file
                 self.path = path
+                self.basedir_expand = basedir_expand
 
         def include_constructor(loader, node):
             if isinstance(node, yaml.ScalarNode):
@@ -61,6 +88,7 @@ class Task(ABC):
             return _Include(
                 mapping["file"],
                 mapping.get("path", ""),
+                mapping.get("basedir_expand", True),
             )
 
         yaml.SafeLoader.add_constructor("!include", include_constructor)
@@ -116,20 +144,52 @@ class Task(ABC):
                 }
 
             if isinstance(node, list):
-                return [
-                    expand(v, base_dir, include_chain)
-                    for v in node
-                ]
+                result = []
+            
+                for v in node:
+                    expanded = expand(v, base_dir, include_chain)
+            
+                    if isinstance(expanded, list):
+                        result.extend(expanded)
+                    else:
+                        result.append(expanded)
+            
+                return result
 
             if isinstance(node, _Include):
                 filename = os.path.join(base_dir, node.file)
+            
                 data = load_yaml(filename, include_chain)
-
+            
                 if node.path:
                     data = lookup(data, node.path, source=filename)
-
+            
+                if node.basedir_expand:
+                    data = expand_basedir(
+                        data,
+                        os.path.dirname(filename),
+                    )
+            
                 return data
 
+            return node
+
+        def expand_basedir(node, base_dir):
+            if isinstance(node, dict):
+                return {
+                    k: expand_basedir(v, base_dir)
+                    for k, v in node.items()
+                }
+        
+            if isinstance(node, list):
+                return [
+                    expand_basedir(v, base_dir)
+                    for v in node
+                ]
+        
+            if isinstance(node, str):
+                return os.path.join(base_dir, node)
+        
             return node
 
         def lookup(data, path, source=yaml_file):

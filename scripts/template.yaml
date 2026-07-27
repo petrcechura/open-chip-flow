@@ -1,0 +1,30 @@
+
+
+
+# 
+design:
+  name: "<design-name>"
+  version: "<version-number>"
+
+  # Verilog/SystemVerilog sources related to pure synthesisable rtl
+  rtl:
+    files:
+      - "<path-to-sv-file>"
+      - !include
+        file: "<path-to-yaml-file"
+        path: "<path-in-yaml>"
+        # If true, every node inside nested yaml gets a basedir
+        # prefix from yaml file path
+        #
+        # default: true
+        basedir_expand: true/false
+    include:
+      - "path-to-include path"
+
+  # Additional SystemVerilog sources for verification
+  verif:
+    files:
+      - "<path-to-sv-file>"
+      - "<path-to-yaml.yaml"
+    include:
+      - "path-to-include path"
