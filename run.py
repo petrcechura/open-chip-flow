@@ -33,6 +33,7 @@ class Task(ABC):
     def add_arguments(cls, parser: argparse.ArgumentParser):
         """Define task-specific arguments."""
 
+    @classmethod
     @abstractmethod
     def run(self):
         """Execute the task."""
