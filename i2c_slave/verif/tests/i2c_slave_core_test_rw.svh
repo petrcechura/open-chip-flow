@@ -14,12 +14,10 @@ endfunction
 
 task i2c_slave_core_test_rw::run_phase(uvm_phase phase);
 
-    i2c_slave_core_seq_clk seq_clk = i2c_slave_core_seq_clk::type_id::create("i2c_slave_core_seq_clk");
     i2c_slave_core_seq_rw seq_rw = i2c_slave_core_seq_rw::type_id::create("i2c_slave_core_seq_rw");
 
     phase.raise_objection(this);
 
-    seq_clk.start(m_i2c_slave_core_env.m_clk_agent.m_clk_sequencer);
     seq_rw.start(m_i2c_slave_core_env.m_i2c_agent.m_i2c_sequencer);
 
     phase.drop_objection(this);

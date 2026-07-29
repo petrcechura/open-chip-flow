@@ -4,6 +4,7 @@
 module i2c_slave_core_tb;
 
     import uvm_pkg::*;
+    import i2c_slave_core_env_pkg::*;
 
     // Interfaces
     // ----------
@@ -14,6 +15,7 @@ module i2c_slave_core_tb;
     assign i2c_slave_core_ifc.sda = i2c_ifc.sda_wire;
     assign i2c_slave_core_ifc.scl = i2c_ifc.scl_wire;
     assign i2c_slave_core_ifc.clk = clk_ifc.clk;
+    assign i2c_ifc.clk = clk_ifc.clk[i2c_slave_core_env_pkg::CLK_I2C_SLAVE_CORE];
     //assign i2c_slave_core_ifc.rst_n = i2c_ifc.rst_n;
 
     // I2C slave core instance

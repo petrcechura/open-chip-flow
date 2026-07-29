@@ -13,7 +13,6 @@ class clk_agent#(parameter int CLK_COUNT = 1) extends uvm_agent;
     /* configuration */
     clk_agent_config#(.CLK_COUNT(CLK_COUNT)) m_clk_agent_config;
 
-
     function new(string name = "clk_agent", uvm_component parent = null);
         super.new(name, parent);
     endfunction
@@ -26,6 +25,8 @@ class clk_agent#(parameter int CLK_COUNT = 1) extends uvm_agent;
 
         m_clk_driver = clk_driver#(.CLK_COUNT(CLK_COUNT))::type_id::create("m_clk_driver", this);
         m_clk_sequencer = clk_sequencer::type_id::create("m_clk_sequencer", this);
+
+        uvm_config_db#(clk_sequencer)::set(null, "clk_agent", "sequencer", m_clk_sequencer);
     endfunction: build_phase
 
     function void connect_phase(uvm_phase phase);
@@ -35,7 +36,7 @@ class clk_agent#(parameter int CLK_COUNT = 1) extends uvm_agent;
         if (m_clk_agent_config.sline) begin
             m_clk_driver.sline = m_clk_agent_config.sline;
         end else begin
-            `uvm_fatal("connect_phase", "Virtual i2c interface not found in I2C agent config!");
+            `uvm_fatal("connect_phase", "Virtual CLK interface not found in CLK agent config!");
         end 
 
     endfunction: connect_phase

@@ -1,2 +1,4 @@
 files:
   - "i2c_agent/i2c_agent.yaml"
+  - "clk_agent/clk_agent.yaml"
+  - "rst_agent/rst_agent.yaml"

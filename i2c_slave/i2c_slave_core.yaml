@@ -28,6 +28,11 @@ design:
         file: "../verif/src/uvm_agents/clk_agent/clk_agent.yaml"
         path: "design/verif/files"
 
+      # Reset Agent
+      - !include
+        file: "../verif/src/uvm_agents/rst_agent/rst_agent.yaml"
+        path: "design/verif/files"
+
       # UVM test environment
       - "verif/env/i2c_slave_core_env_pkg.sv"
       - "verif/sequences/i2c_slave_core_seq_pkg.sv"
@@ -41,6 +46,9 @@ design:
         path: "design/verif/includes"
       - !include
         file: "../verif/src/uvm_agents/clk_agent/clk_agent.yaml"
+        path: "design/verif/includes"
+      - !include
+        file: "../verif/src/uvm_agents/rst_agent/rst_agent.yaml"
         path: "design/verif/includes"
       - "verif/env/"
       - "verif/sequences/"

@@ -1,16 +1,22 @@
-package clk_agent_pkg;
+package rst_agent_pkg;
 
 	import uvm_pkg::*;
 
 	`include "uvm_macros.svh"
 
-	`include "clk_seq_item.svh"
-	`include "clk_agent_config.svh"
-	`include "clk_sequencer.svh"
-	`include "clk_driver.svh"
-	`include "clk_agent.svh"
-    `include "sequences/clk_seq_single_clk_set.svh"
+	`include "rst_seq_item.svh"
+	`include "rst_agent_config.svh"
+	`include "rst_sequencer.svh"
+	`include "rst_driver.svh"
+	`include "rst_agent.svh"
+    `include "sequences/rst_seq_rst_assert.svh"
 
+    task rst_assert(int _type);
+
+        
+    endtask
+
+    /*
     task clk_on(int _type);
         automatic clk_sequencer m_clk_sequencer;
         automatic clk_seq_single_clk_set seq_clk;
@@ -47,5 +53,6 @@ package clk_agent_pkg;
         uvm_config_db#(clk_sequencer)::get(null, "clk_agent", "sequencer", m_clk_sequencer);
         seq_clk.start(m_clk_sequencer);
     endtask
+    */
 
-endpackage: clk_agent_pkg
+endpackage: rst_agent_pkg

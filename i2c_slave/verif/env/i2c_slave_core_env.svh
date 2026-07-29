@@ -1,19 +1,23 @@
 import uvm_pkg::*;
 import i2c_agent_pkg::*;
 import clk_agent_pkg::*;
+import rst_agent_pkg::*;
 
 class i2c_slave_core_env extends uvm_component;
 
     `uvm_component_utils(i2c_slave_core_env)
 
-    localparam CLK_COUNT = 1;
+    localparam CLK_COUNT = i2c_slave_core_env_pkg::_CLK_COUNT;
     
+    // I2C agent
+    // ---------
     i2c_agent m_i2c_agent;
     i2c_agent_config m_i2c_agent_config;
 
-    clk_agent#(.CLK_COUNT(CLK_COUNT)) m_clk_agent;
+    // CLK agent
+    // ---------
+    clk_agent       #(.CLK_COUNT(CLK_COUNT)) m_clk_agent;
     clk_agent_config#(.CLK_COUNT(CLK_COUNT)) m_clk_agent_config;
-
     
     extern function new(string name = "i2c_slave_core_env", uvm_component parent = null);
     extern function void build_phase(uvm_phase phase);
@@ -32,7 +36,7 @@ function void i2c_slave_core_env::build_phase(uvm_phase phase);
     m_i2c_agent = i2c_agent::type_id::create("m_i2c_agent", this);
     m_i2c_agent_config = i2c_agent_config::type_id::create("m_i2c_agent_config", this);
 
-    // instantiate clk agent & its config
+    // instantiate CLK agent & its config
     // ----------------------------------
     m_clk_agent = clk_agent#(.CLK_COUNT(CLK_COUNT))::type_id::create("m_clk_agent", this);
     m_clk_agent_config = clk_agent_config#(.CLK_COUNT(CLK_COUNT))::type_id::create("m_clk_agent_config", this);

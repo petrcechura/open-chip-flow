@@ -12,11 +12,15 @@ class i2c_slave_core_seq_rw extends uvm_sequence #(i2c_seq_item);
     task body;
       	automatic i2c_seq_item frame = i2c_seq_item::type_id::create("frame");
 
+        // Set clock running (20ns)
+        // ------------------------
+        clk_set_period(i2c_slave_core_env_pkg::CLK_I2C_SLAVE_CORE, 20ns);
+        clk_on(i2c_slave_core_env_pkg::CLK_I2C_SLAVE_CORE);
+
       	// Reset DUT
+        // ---------
         `uvm_info("seq_rw", "Resetting DUT...", 1);
       	start_item(frame);
-
-
 
         frame.rst_n = 1'b0;
         frame.scl_period = 5;
@@ -26,6 +30,7 @@ class i2c_slave_core_seq_rw extends uvm_sequence #(i2c_seq_item);
         #50ns;
 
       	// Sending custom data
+        // -------------------
         `uvm_info("seq_rw", "Sending custom data...", 1);
       	start_item(frame);
 
@@ -37,6 +42,8 @@ class i2c_slave_core_seq_rw extends uvm_sequence #(i2c_seq_item);
         frame.delay = 0;
         frame.rst_n = 1'b1;
       	finish_item(frame);
+
+        clk_off(i2c_slave_core_env_pkg::CLK_I2C_SLAVE_CORE);
 
     
     endtask: body

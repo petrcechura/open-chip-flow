@@ -5,12 +5,12 @@ class clk_seq_item extends uvm_sequence_item;
 
     // specifies clock period
     realtime clk_period;
+    // when 1, clk period is changed in driver
+    bit clk_period_set;
     // which clock (from interface array) modify
     int clk_type;
     // 1 = clock is on, 0 = clock is off
     bit clk_en;
-
-
 
     /* Standard UVM Methods */
     extern function new(string name = "clk_seq_item");
