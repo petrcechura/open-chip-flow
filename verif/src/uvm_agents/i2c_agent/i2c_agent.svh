@@ -1,72 +1,56 @@
 class i2c_agent extends uvm_agent;
               
 
-  `uvm_component_utils(i2c_agent)
-                             
+    `uvm_component_utils(i2c_agent)
 
-  uvm_analysis_port #(i2c_ll_seq_item) ap;
+    uvm_analysis_port #(i2c_seq_item) ap;
 
+    i2c_driver m_i2c_driver;
 
-  i2c_driver m_i2c_driver;
+    /* sequencers */
+    i2c_sequencer m_i2c_sequencer;
 
-  /* sequencers */
-  i2c_ll_sequencer m_i2c_ll_sequencer;
-  i2c_pl_sequencer m_i2c_pl_sequencer;
+    /* monitors */
+    //i2c_monitor m_i2c_monitor;
 
-  /* monitors */
-  i2c_pl_monitor m_i2c_pl_monitor;
-
-  /* translator sequences */
-  i2c_l2p_sequence m_i2c_l2p_sequence;
-
-  /* configuration */
-  i2c_agent_config cfg;
+    /* configuration */
+    i2c_agent_config m_i2c_agent_config;
 
 
-  function new(string name = "i2c_agent", uvm_component parent = null);
-    super.new(name, parent);
-  endfunction
+    function new(string name = "i2c_agent", uvm_component parent = null);
+        super.new(name, parent);
+    endfunction
 
-  function void build_phase(uvm_phase phase);
-    ap = new("I2C Monitor", this);
-
-    m_i2c_pl_monitor = i2c_pl_monitor::type_id::create("m_i2c_pl_monitor", this);
-
-    if (!uvm_config_db #(i2c_agent_config)::get(this, "", "i2c_agent_config", cfg) )
-     `uvm_fatal("CONFIG_LOAD", "Cannot get() configuration i2c_agent_config from uvm_config_db. Have you set() it?")
+    function void build_phase(uvm_phase phase);
+        ap = new("I2C Monitor", this);
   
- 
- //if(cfg.ACTIVE)
-    if(1)
-      begin
-        m_i2c_driver = i2c_driver::type_id::create("m_i2c_driver", this);
-        m_i2c_ll_sequencer = i2c_ll_sequencer::type_id::create("m_i2c_ll_sequencer", this);
-        m_i2c_pl_sequencer = i2c_pl_sequencer::type_id::create("m_i2c_pl_sequencer", this);
-        m_i2c_l2p_sequence = i2c_l2p_sequence::type_id::create("m_i2c_l2p_sequence", this);
-      end
-  endfunction: build_phase
+        if (m_i2c_agent_config == null) begin
+            `uvm_fatal("build_phase", "i2c_agent_config instance found NULL! It is expected it's set in parent environment...");
+        end
 
-  function void connect_phase(uvm_phase phase);
+        if(m_i2c_agent_config.ACTIVE) begin
+            m_i2c_driver = i2c_driver::type_id::create("m_i2c_driver", this);
+            m_i2c_sequencer = i2c_sequencer::type_id::create("m_i2c_sequencer", this);
+        end
+    endfunction: build_phase
 
-    //if(cfg.ACTIVE)
-    if(1) begin
-      m_i2c_driver.seq_item_port.connect(m_i2c_pl_sequencer.seq_item_export);
-      m_i2c_driver.sline = cfg.sline;
+    function void connect_phase(uvm_phase phase);
 
-      m_i2c_l2p_sequence.ll_sequencer = m_i2c_ll_sequencer;
-    end
+        if(m_i2c_agent_config.ACTIVE) begin
+            m_i2c_driver.seq_item_port.connect(m_i2c_sequencer.seq_item_export);
 
+            if (m_i2c_agent_config.sline) begin
+                m_i2c_driver.sline = m_i2c_agent_config.sline;
+            end else begin
+                `uvm_fatal("connect_phase", "Virtual i2c interface not found in I2C agent config!");
+            end 
 
-    m_i2c_pl_monitor.sline = cfg.sline;
+        end
 
-  endfunction: connect_phase
+    endfunction: connect_phase
 
-  task run_phase(uvm_phase phase);
-  
-      /* translate ll_seq_items into pl_sequencer via translator l2p sequence*/
-      fork
-          m_i2c_l2p_sequence.start(m_i2c_pl_sequencer);
-      join_none
-  endtask: run_phase
+    task run_phase(uvm_phase phase);
+
+    endtask: run_phase
 
 endclass: i2c_agent

@@ -30,7 +30,7 @@ class Task(ABC):
 
     @classmethod
     def report_info(cls, txt : str, severity : int = 0):
-        _prefix = '<OPF> INFO:'
+        _prefix = '[OCF] INFO:'
 
         match severity:
             case 0: 
@@ -45,7 +45,7 @@ class Task(ABC):
 
     @classmethod
     def report_error(cls, txt : str):
-        _prefix = '<OPF> ERROR:'
+        _prefix = '[OCF] ERROR:'
         print(_prefix + ' ' + txt)
         exit(1)
 

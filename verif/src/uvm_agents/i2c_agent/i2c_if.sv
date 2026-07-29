@@ -17,15 +17,16 @@
 //   permissions and limitations under the License.
 //------------------------------------------------------------
 
-interface i2c_if(
-    inout wire sda_w,
-    inout wire scl_w
-);
-  logic[6:0] addr;
-  logic sda;
-  logic scl;
-  logic rst_n;
-  logic clk;
+interface i2c_if;
+
+    wire sda_w;
+    wire scl_w;
+    logic[6:0] addr;
+    logic sda;
+    logic scl;
+    logic rst_n;
+    logic clk;
+    
 
   assign sda_w = sda;
   assign scl_w = scl;
