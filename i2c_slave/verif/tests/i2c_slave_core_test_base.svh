@@ -1,0 +1,32 @@
+class i2c_slave_core_test_base extends uvm_test;
+
+    `uvm_component_utils(i2c_slave_core_test_base)
+
+    i2c_slave_core_env m_i2c_slave_core_env;
+    i2c_slave_core_env_config m_i2c_slave_core_env_config;
+
+    extern function new(string name = "i2c_slave_core_test_base", uvm_component parent = null);
+    extern function void build_phase(uvm_phase phase);
+
+endclass: i2c_slave_core_test_base
+
+function i2c_slave_core_test_base::new(string name = "i2c_slave_core_test_base", uvm_component parent = null);
+    super.new(name, parent);
+endfunction
+
+function void i2c_slave_core_test_base::build_phase(uvm_phase phase);
+
+    m_i2c_slave_core_env =        i2c_slave_core_env::type_id::create("m_i2c_slave_core_env", this);
+    m_i2c_slave_core_env_config = i2c_slave_core_env_config::type_id::create("m_i2c_slave_core_env_config", this);
+
+    uvm_config_db #(i2c_slave_core_env)::set(this, 
+                                             "i2c_slave_core",
+                                             "env",
+                                             m_i2c_slave_core_env);
+
+    uvm_config_db #(i2c_slave_core_env_config)::set(this, 
+                                             "i2c_slave_core",
+                                             "env_config",
+                                             m_i2c_slave_core_env_config);
+
+endfunction: build_phase
