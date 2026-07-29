@@ -1,0 +1,6 @@
+design:
+  verif:
+    files:
+      - "clk_agent_pkg.sv"
+    includes:
+      - "."
