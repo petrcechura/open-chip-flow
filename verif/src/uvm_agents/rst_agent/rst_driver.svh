@@ -9,27 +9,26 @@ class rst_driver#(parameter int RST_COUNT = 1) extends uvm_driver #(rst_seq_item
     virtual rst_if#(.RST_COUNT(RST_COUNT)) sline;
     
     rst_seq_item seq_item;
-    
-    logic[RST_COUNT-1:0] rst_actives;
 
     task rst_assert;
-        sline.rst[seq_item.rst_type] = rst_actives[seq_item.rst_type];
-        #(seq_item.duration);
-        sline.rst[seq_item.rst_type] = ~rst_actives[seq_item.rst_type];
+        sline.rst[seq_item.rst_type] = seq_item.value;
     endtask
-
-    function build_phase(uvm_phase);
-        uvm_config_db#(logic[RST_COUNT-1:0])::get(null, "rst_agent", "active_levels", rst_actives);
-    endfunction
     
     task run_phase(uvm_phase phase);
         integer bitPtr = 0;
 
         begin
-
+            
             // Deassert all resets by default
             for (int i = 0; i < RST_COUNT; i++) begin
-                sline.rst[i] = ~rst_actives[i];
+                automatic bit active_level;
+                if (uvm_config_db#(bit)::exists(null, "rst_agent", $sformatf("active_level_%0d", i))) begin
+                    uvm_config_db#(bit)::get(null, "rst_agent", $sformatf("active_level_%0d", i), active_level);
+                end else begin
+                    active_level = ~RST_ACTIVE_LEVEL_DEFAULT;
+                end
+            
+                sline.rst[i] = active_level;
             end
 
             forever begin

@@ -1,12 +1,8 @@
 class rst_agent#(parameter int RST_COUNT = 1) extends uvm_agent;
               
-
     `uvm_component_utils(rst_agent)
 
     uvm_analysis_port #(rst_seq_item) ap;
-
-    // Reset active levels
-    logic[RST_COUNT-1:0] active_levels;
 
     rst_driver#(.RST_COUNT(RST_COUNT)) m_rst_driver;
 
@@ -22,7 +18,7 @@ class rst_agent#(parameter int RST_COUNT = 1) extends uvm_agent;
             `uvm_fatal("build_phase", "Cannot set active reset level, value not within bounds!")
         end
 
-        active_levels[_type] = level;
+        uvm_config_db#(bit)::set(null, "rst_agent", $sformatf("active_level_%d", _type), level);
     endfunction
 
     function new(string name = "rst_agent", uvm_component parent = null);
@@ -39,7 +35,7 @@ class rst_agent#(parameter int RST_COUNT = 1) extends uvm_agent;
         m_rst_sequencer = rst_sequencer::type_id::create("m_rst_sequencer", this);
 
         uvm_config_db#(rst_sequencer)::set(null, "rst_agent", "sequencer", m_rst_sequencer);
-        uvm_config_db#(logic[RST_COUNT-1:0])::set(null, "rst_agent", "active_levels", active_levels);
+
     endfunction: build_phase
 
     function void connect_phase(uvm_phase phase);

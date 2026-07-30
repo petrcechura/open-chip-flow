@@ -109,12 +109,9 @@ class i2c_driver extends uvm_driver #(i2c_seq_item);
     endtask: send_packets
     
     task bitPeriod(real length = 1);
-
         begin
             repeat(packets.scl_period * length) begin
-                $display("waiting for posedge of clk");
                 @(posedge sline.clk);
-                $display("after posedge");
             end
         end
     endtask: bitPeriod

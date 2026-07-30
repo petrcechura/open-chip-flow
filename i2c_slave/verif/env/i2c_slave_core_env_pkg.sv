@@ -10,4 +10,9 @@ package i2c_slave_core_env_pkg;
         _CLK_COUNT
     } clk_id_t;
 
+    typedef enum int {
+        RST_I2C_SLAVE_CORE,
+        _RST_COUNT
+    } rst_id_t;
+
 endpackage

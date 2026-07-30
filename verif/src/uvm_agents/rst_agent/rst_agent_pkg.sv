@@ -2,6 +2,8 @@ package rst_agent_pkg;
 
 	import uvm_pkg::*;
 
+    localparam bit RST_ACTIVE_LEVEL_DEFAULT = 1'b1;
+
 	`include "uvm_macros.svh"
 
 	`include "rst_seq_item.svh"
@@ -11,48 +13,17 @@ package rst_agent_pkg;
 	`include "rst_agent.svh"
     `include "sequences/rst_seq_rst_assert.svh"
 
-    task rst_assert(int _type);
-
+    task rst_assert(int _type, realtime duration);
+        automatic rst_sequencer m_rst_sequencer;
+        automatic rst_seq_rst_assert seq_rst;
+        
+        seq_rst = rst_seq_rst_assert::type_id::create("rst_seq_rst_assert");
+        
+        seq_rst.rst_set(_type, duration);
+        
+        uvm_config_db#(rst_sequencer)::get(null, "rst_agent", "sequencer", m_rst_sequencer);
+        seq_rst.start(m_rst_sequencer);
         
     endtask
-
-    /*
-    task clk_on(int _type);
-        automatic clk_sequencer m_clk_sequencer;
-        automatic clk_seq_single_clk_set seq_clk;
-        
-        seq_clk = clk_seq_single_clk_set::type_id::create("clk_seq_single_clk_set");
-        
-        seq_clk.clk_set(_type, 1'b1);
-        
-        uvm_config_db#(clk_sequencer)::get(null, "clk_agent", "sequencer", m_clk_sequencer);
-        seq_clk.start(m_clk_sequencer);
-        
-    endtask
-
-    task clk_off(int _type);
-        automatic clk_sequencer m_clk_sequencer;
-        automatic clk_seq_single_clk_set seq_clk;
-        
-        seq_clk = clk_seq_single_clk_set::type_id::create("clk_seq_single_clk_set");
-        
-        seq_clk.clk_set(_type, 1'b0);
-        
-        uvm_config_db#(clk_sequencer)::get(null, "clk_agent", "sequencer", m_clk_sequencer);
-        seq_clk.start(m_clk_sequencer);
-    endtask
-
-    task clk_set_period(int _type, realtime period);
-        automatic clk_sequencer m_clk_sequencer;
-        automatic clk_seq_single_clk_set seq_clk;
-        
-        seq_clk = clk_seq_single_clk_set::type_id::create("clk_seq_single_clk_set");
-        
-        seq_clk.clk_period(_type, period);
-        
-        uvm_config_db#(clk_sequencer)::get(null, "clk_agent", "sequencer", m_clk_sequencer);
-        seq_clk.start(m_clk_sequencer);
-    endtask
-    */
 
 endpackage: rst_agent_pkg

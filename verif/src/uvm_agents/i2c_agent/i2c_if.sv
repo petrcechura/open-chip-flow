@@ -22,6 +22,7 @@ interface i2c_if;
     wire sda_wire;
     wire scl_wire;
     wire clk;
+    wire rst;
     logic[6:0] addr;
     logic sda_i, sda_o, sda_en;
     logic scl_i, scl_o, scl_en;
