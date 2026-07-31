@@ -3,14 +3,14 @@
 
 `define USING_VERILATOR
 
-module i2c_slave_core_tb;
+module i2c_slave_tb;
 
     import uvm_pkg::*;
-    import i2c_slave_core_env_pkg::*;
+    import i2c_slave_env_pkg::*;
 
     // Interfaces
     // ----------
-    i2c_slave_core_if i2c_slave_core_ifc();
+    i2c_slave_if i2c_slave_ifc();
     i2c_if i2c_ifc();
     clk_if clk_ifc();
     rst_if rst_ifc();
@@ -22,39 +22,35 @@ module i2c_slave_core_tb;
     assign i2c_slave_core_ifc.scl = i2c_ifc.scl_wire;
 `else
     assign sda_t[1] = i2c_ifc.sda_en;
-    assign sda_i[1] = i2c_ifc.sda_i;
+    assign i2c_ifc.sda_i = sda_i[1];
     assign sda_o[1] = i2c_ifc.sda_o;
     assign scl_t[1] = i2c_ifc.scl_en;
-    assign scl_i[1] = i2c_ifc.scl_i;
+    assign i2c_ifc.scl_i = scl_i[1];
     assign scl_o[1] = i2c_ifc.scl_o;
 `endif
-    assign i2c_slave_core_ifc.clk = clk_ifc.clk;
-    assign i2c_slave_core_ifc.rst_n = rst_ifc.rst;
-    assign i2c_ifc.clk = clk_ifc.clk[i2c_slave_core_env_pkg::CLK_I2C_SLAVE_CORE];
-    assign i2c_ifc.rst = rst_ifc.rst[i2c_slave_core_env_pkg::RST_I2C_SLAVE_CORE];
+    assign i2c_slave_ifc.clk = clk_ifc.clk;
+    assign i2c_slave_ifc.rst_n = rst_ifc.rst;
+    assign i2c_ifc.clk = clk_ifc.clk[i2c_slave_env_pkg::CLK_I2C_SLAVE];
+    assign i2c_ifc.rst = rst_ifc.rst[i2c_slave_env_pkg::RST_I2C_SLAVE];
 
-    // I2C slave core instance
+    // I2C slave instance
     // -----------------------
-    i2c_slave_core dut (
-        .clk(   i2c_slave_core_ifc.clk),
-        .arst(  i2c_slave_core_ifc.rst_n),
+    i2c_slave#(.SLAVE_ADDR(7'b0000110),
+               .REG_COUNT(4)) dut
+    (
+        .clk(   i2c_slave_ifc.clk),
+        .arst(  i2c_slave_ifc.rst_n),
 `ifndef USING_VERILATOR
-        .sda(   i2c_slave_core_ifc.sda),
-        .scl(   i2c_slave_core_ifc.scl),
+        .sda(   i2c_slave_ifc.sda),
+        .scl(   i2c_slave_ifc.scl)
 `else
         .sda_t(sda_t[0]),
         .sda_o(sda_o[0]),
         .sda_i(sda_i[0]),
         .scl_t(scl_t[0]),
         .scl_o(scl_o[0]),
-        .scl_i(scl_i[0]),
+        .scl_i(scl_i[0])
 `endif
-
-        .data_in(   i2c_slave_core_ifc.data_in),
-        .data_out(  i2c_slave_core_ifc.data_out),
-        .tx_start(  i2c_slave_core_ifc.tx_start),
-        .rx_done(   i2c_slave_core_ifc.rx_done),
-        .ack_in(1'b0)
     );
 
 `ifdef USING_VERILATOR
@@ -76,7 +72,7 @@ module i2c_slave_core_tb;
     initial begin
         $dumpfile("dump.vcd");
         $dumpvars();
-        uvm_config_db #(virtual i2c_slave_core_if)::set(null, "uvm_test_top", "i2c_slave_core_ifc", i2c_slave_core_ifc);
+        uvm_config_db #(virtual i2c_slave_if)::set(null, "uvm_test_top", "i2c_slave_ifc", i2c_slave_ifc);
         uvm_config_db #(virtual i2c_if)::set(null, "uvm_test_top", "i2c_ifc", i2c_ifc);
         uvm_config_db #(virtual clk_if)::set(null, "uvm_test_top", "clk_ifc", clk_ifc);
         uvm_config_db #(virtual rst_if)::set(null, "uvm_test_top", "rst_ifc", rst_ifc);

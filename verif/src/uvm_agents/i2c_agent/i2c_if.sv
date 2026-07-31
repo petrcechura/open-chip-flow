@@ -26,8 +26,8 @@ interface i2c_if;
     logic[6:0] addr;
     logic sda_o, sda_en;
     logic scl_o, scl_en;
-    wire scl_i;
-    wire sda_i;
+    logic scl_i;
+    logic sda_i;
 
 
 `ifndef USING_VERILATOR

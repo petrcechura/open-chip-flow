@@ -12,8 +12,8 @@ class VerifTask(Task):
     UVM_DEFAULT_VERSION = '1.1d'
     UVM_AVAILABLE_VERSIONS = ['1.1d', '1.2', '1800.2-2017', '1800.2-2020']
 
-    JOBS_MAX = 8
-    JOBS_DEFAULT = 4
+    JOBS_MAX = 16
+    JOBS_DEFAULT = 8
 
     @classmethod
     def add_arguments(cls, parser):
@@ -49,21 +49,27 @@ class VerifTask(Task):
         # Read YAML file into data structure
         cwd = os.path.dirname(self.args.yaml)
         files = []
+        includes = []
         for path in ['design/rtl/files', 'design/verif/files']:
+
             try:
-                files.extend([os.path.join(cwd, f) for f in self.get_yaml_node(self.args.yaml, path)])
+                _f = [os.path.join(cwd, f) for f in self.get_yaml_node(self.args.yaml, path)]
+                files.extend(_f)
+                includes.extend([os.path.dirname(_i) for _i in _f])
 
             except Exception:
                 self.report_info(f'Failed to read {path}')
 
-        includes = []
         for path in ['design/rtl/includes', 'design/verif/includes']:
             try:
                 includes.extend([os.path.join(cwd, f) for f in self.get_yaml_node(self.args.yaml, path)])
             except Exception:
                 self.report_info(f'Failed to read {path}')
 
-        top_module = self.get_yaml_node(self.args.yaml, 'design/verif/top_module')
+        try: 
+            top_module = self.get_yaml_node(self.args.yaml, 'design/verif/top_module')
+        except Exception:
+            self.report_error(f'Failed to extract `top_module` from {self.args.yaml}')
 
         # Get path to directory where UVM library is located
         # and include the UVM in files for Verilator

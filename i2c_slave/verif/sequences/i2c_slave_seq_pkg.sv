@@ -1,5 +1,5 @@
 
-package i2c_slave_core_seq_pkg;
+package i2c_slave_seq_pkg;
 
     import uvm_pkg::*;
     `include "uvm_macros.svh"
@@ -8,6 +8,6 @@ package i2c_slave_core_seq_pkg;
     import clk_agent_pkg::*;
     import rst_agent_pkg::*;
     
-    `include "i2c_slave_core_seq_rw.svh"
+    `include "i2c_slave_seq_rw.svh"
 
-endpackage: i2c_slave_core_seq_pkg
+endpackage: i2c_slave_seq_pkg

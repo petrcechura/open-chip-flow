@@ -14,22 +14,25 @@ class i2c_driver extends uvm_driver #(i2c_seq_item);
     task send_packets;
         automatic bit cont = 1'b1;
 
+        // Drive the I2C bus
+        sline.sda_en = 1'b1;
+        sline.scl_en = 1'b1;
+
+        // Start bit 
+        `uvm_info("datalink", "I2C: Startbit", UVM_MEDIUM);
+        sline.sda_o = 1'b0;
+        bitPeriod(0.25);
+        sline.scl_o = 1'b0;
+
+        // Send all data sequently
         foreach(packets.data[i]) begin
 
             if (!cont) begin
-                return; 
+                break; 
             end
 
             fork
                 begin
-                    sline.sda_en = 1'b1;
-                    sline.scl_en = 1'b1;
-
-                    `uvm_info("datalink", "I2C: Startbit", UVM_MEDIUM);
-                    // Start bit 
-                    sline.sda_o = 1'b0;
-                    bitPeriod(0.25);
-                    sline.scl_o = 1'b0;
 
                     // Data
                     `uvm_info("datalink", $sformatf("I2C: Sending %0d. frame [%b]", i, packets.data[i]), UVM_MEDIUM);
@@ -73,24 +76,10 @@ class i2c_driver extends uvm_driver #(i2c_seq_item);
 
                         sline.scl_o = 1'b1;
                         bitPeriod(0.5);
-                        sline.sda_en = 1'b0;
+                        sline.sda_o = 1'b0;
+                        sline.sda_en = 1'b1;
                     end
                     
-                    // Stopbit
-                    `uvm_info("datalink", "I2C: Stopbit", UVM_MEDIUM);
-                    fork
-                        begin
-                            sline.sda_o = 1'b0;
-                            bitPeriod(0.5);
-                            sline.sda_o = 1'b1;
-                        end
-                    
-                        begin
-                            sline.scl_o = 1'b0;
-                            bitPeriod(0.25);
-                            sline.scl_o = 1'b1;
-                        end
-                    join
                 end
 
                 // ADDR
@@ -104,6 +93,22 @@ class i2c_driver extends uvm_driver #(i2c_seq_item);
             join
 
         end
+
+        // Stopbit
+        `uvm_info("datalink", "I2C: Stopbit", UVM_MEDIUM);
+        fork
+            begin
+                sline.sda_o = 1'b0;
+                bitPeriod(0.5);
+                sline.sda_o = 1'b1;
+            end
+        
+            begin
+                sline.scl_o = 1'b0;
+                bitPeriod(0.25);
+                sline.scl_o = 1'b1;
+            end
+        join
     
     endtask: send_packets
     

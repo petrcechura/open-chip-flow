@@ -2,5 +2,5 @@ design:
   verif:
     files:
       - "rst_agent_pkg.sv"
-    includes:
-      - "."
+    #includes:
+    #  - "."

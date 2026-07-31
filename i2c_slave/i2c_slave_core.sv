@@ -25,6 +25,7 @@ module i2c_slave_core
 
     input  logic tx_start,
     output logic rx_done,
+    output logic core_processing,
     input  logic ack_in,
     output logic ack_out,
     input  logic[7:0] data_in,
@@ -144,17 +145,18 @@ module i2c_slave_core
             DATA_RX: begin
                 cntr_4b_en = 1'b1;
 
+                // max 8bit data
                 if (cntr_4b_q == 4'd8 && scl_fall) begin
                     rx_done = 1'b1;
                     state_d = ACK_RX;
                 end
-                 
+                
+                // sample data on scl rise
                 if (scl_rise) begin
                     cntr_4b_incr = 1'b1;
                     data_reg_d[7:1] = data_reg_q[6:0];
                     data_reg_d[0] = sda_latched;
                 end
-            
 
                 // stopbit condition
                 if (scl_latched && sda_rise) begin
@@ -181,7 +183,6 @@ module i2c_slave_core
 
             ACK_RX: begin
                 sda_t = 1'b1;
-                // auto ACK
                 sda_o = ack_in;
 
                 if (scl_fall) begin
@@ -204,6 +205,7 @@ module i2c_slave_core
                     end
                 end
             end
+
             default: begin
 
             end
@@ -211,5 +213,6 @@ module i2c_slave_core
     end
 
     assign data_out = data_reg_q;
+    assign core_processing = (state_q != IDLE) ? 1'b1 : 1'b0;
 
 endmodule

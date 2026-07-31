@@ -3,9 +3,9 @@ import i2c_agent_pkg::*;
 import clk_agent_pkg::*;
 import rst_agent_pkg::*;
 
-class i2c_slave_core_env extends uvm_component;
+class i2c_slave_env extends uvm_component;
 
-    `uvm_component_utils(i2c_slave_core_env)
+    `uvm_component_utils(i2c_slave_env)
     
     // I2C agent
     // ---------
@@ -14,29 +14,29 @@ class i2c_slave_core_env extends uvm_component;
 
     // CLK agent
     // ---------
-    clk_agent       #(.CLK_COUNT(i2c_slave_core_env_pkg::_CLK_COUNT)) m_clk_agent;
-    clk_agent_config#(.CLK_COUNT(i2c_slave_core_env_pkg::_CLK_COUNT)) m_clk_agent_config;
+    clk_agent       #(.CLK_COUNT(i2c_slave_env_pkg::_CLK_COUNT)) m_clk_agent;
+    clk_agent_config#(.CLK_COUNT(i2c_slave_env_pkg::_CLK_COUNT)) m_clk_agent_config;
 
     // RST agent
     // ---------
-    rst_agent       #(.RST_COUNT(i2c_slave_core_env_pkg::_RST_COUNT)) m_rst_agent;
-    rst_agent_config#(.RST_COUNT(i2c_slave_core_env_pkg::_RST_COUNT)) m_rst_agent_config;
+    rst_agent       #(.RST_COUNT(i2c_slave_env_pkg::_RST_COUNT)) m_rst_agent;
+    rst_agent_config#(.RST_COUNT(i2c_slave_env_pkg::_RST_COUNT)) m_rst_agent_config;
     
-    extern function new(string name = "i2c_slave_core_env", uvm_component parent = null);
+    extern function new(string name = "i2c_slave_env", uvm_component parent = null);
     extern function void build_phase(uvm_phase phase);
     extern function void connect_phase(uvm_phase phase);
 
 endclass
 
-function i2c_slave_core_env::new(string name = "i2c_slave_core_env", uvm_component parent = null);
+function i2c_slave_env::new(string name = "i2c_slave_env", uvm_component parent = null);
     super.new(name, parent);
 endfunction
 
-function void i2c_slave_core_env::build_phase(uvm_phase phase);
+function void i2c_slave_env::build_phase(uvm_phase phase);
 
     // Set RST active level values
     // --------------------------- 
-    uvm_config_db#(bit)::set(null, "rst_agent", $sformatf("active_level_%0d", i2c_slave_core_env_pkg::RST_I2C_SLAVE_CORE), 1'b1);
+    uvm_config_db#(bit)::set(null, "rst_agent", $sformatf("active_level_%0d", i2c_slave_env_pkg::RST_I2C_SLAVE), 1'b1);
 
 
     // instantiate I2C agent & its config
@@ -46,13 +46,13 @@ function void i2c_slave_core_env::build_phase(uvm_phase phase);
 
     // instantiate CLK agent & its config
     // ----------------------------------
-    m_clk_agent = clk_agent#(.CLK_COUNT(i2c_slave_core_env_pkg::_CLK_COUNT))::type_id::create("m_clk_agent", this);
-    m_clk_agent_config = clk_agent_config#(.CLK_COUNT(i2c_slave_core_env_pkg::_CLK_COUNT))::type_id::create("m_clk_agent_config", this);
+    m_clk_agent = clk_agent#(.CLK_COUNT(i2c_slave_env_pkg::_CLK_COUNT))::type_id::create("m_clk_agent", this);
+    m_clk_agent_config = clk_agent_config#(.CLK_COUNT(i2c_slave_env_pkg::_CLK_COUNT))::type_id::create("m_clk_agent_config", this);
 
     // instantiate RST agent & its config
     // ----------------------------------
-    m_rst_agent = rst_agent#(.RST_COUNT(i2c_slave_core_env_pkg::_RST_COUNT))::type_id::create("m_rst_agent", this);
-    m_rst_agent_config = rst_agent_config#(.RST_COUNT(i2c_slave_core_env_pkg::_RST_COUNT))::type_id::create("m_rst_agent_config", this);
+    m_rst_agent = rst_agent#(.RST_COUNT(i2c_slave_env_pkg::_RST_COUNT))::type_id::create("m_rst_agent", this);
+    m_rst_agent_config = rst_agent_config#(.RST_COUNT(i2c_slave_env_pkg::_RST_COUNT))::type_id::create("m_rst_agent_config", this);
 
 
     // Connect interfaces to from config_db to the agents
@@ -94,22 +94,22 @@ function void i2c_slave_core_env::build_phase(uvm_phase phase);
     // store i2c_agent & its config to config_db
     // -----------------------------------------
     m_i2c_agent.m_i2c_agent_config = m_i2c_agent_config;
-    uvm_config_db#(i2c_agent_config)::set(null, "i2c_slave_core", "i2c_agent_config", m_i2c_agent.m_i2c_agent_config);
+    uvm_config_db#(i2c_agent_config)::set(null, "i2c_slave", "i2c_agent_config", m_i2c_agent.m_i2c_agent_config);
 
     // store clk_agent & its config to config_db
     // -----------------------------------------
     m_clk_agent.m_clk_agent_config = m_clk_agent_config;
-    uvm_config_db#(clk_agent_config)::set(null, "i2c_slave_core", "clk_agent_config", m_clk_agent.m_clk_agent_config);
+    uvm_config_db#(clk_agent_config)::set(null, "i2c_slave", "clk_agent_config", m_clk_agent.m_clk_agent_config);
 
     // store rst_agent & its config to config_db
     // -----------------------------------------
     m_rst_agent.m_rst_agent_config = m_rst_agent_config;
-    uvm_config_db#(rst_agent_config)::set(null, "i2c_slave_core", "rst_agent_config", m_rst_agent.m_rst_agent_config);
+    uvm_config_db#(rst_agent_config)::set(null, "i2c_slave", "rst_agent_config", m_rst_agent.m_rst_agent_config);
 
 
 endfunction: build_phase
 
 // TODO
-function void i2c_slave_core_env::connect_phase(uvm_phase phase);
+function void i2c_slave_env::connect_phase(uvm_phase phase);
 
 endfunction: connect_phase

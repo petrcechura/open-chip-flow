@@ -3,5 +3,5 @@ design:
     files:
       - "i2c_agent_pkg.sv"
       - "i2c_bus.sv"
-    includes:
-      - "."
+    #includes:
+    #  - "."
