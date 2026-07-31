@@ -10,9 +10,9 @@ class rst_seq_rst_assert extends uvm_sequence #(rst_seq_item);
     int unsigned rst_type;
     realtime duration;
 
-    function rst_set(int unsigned rst_type, realtime duration);
-        rst_type = rst_type;
-        duration = duration;
+    function rst_set(int unsigned _rst_type, realtime _duration);
+        rst_type = _rst_type;
+        duration = _duration;
     endfunction 
 
 
@@ -26,9 +26,6 @@ class rst_seq_rst_assert extends uvm_sequence #(rst_seq_item);
             `uvm_warning("rst_agent", $sformatf("Active level for rst: %0d not found in config_db! Assuming active high by default...", rst_type));
             active_level = RST_ACTIVE_LEVEL_DEFAULT;
         end
-
-      	// put reset on
-        `uvm_info("seq_rst", $sformatf("%t: .. RESET[%0d] (active %s) for %0t...", $realtime, rst_type, (active_level ? "high" : "low"), duration), UVM_MEDIUM);
       	
         start_item(item);
         item.rst_type = rst_type;
@@ -41,8 +38,6 @@ class rst_seq_rst_assert extends uvm_sequence #(rst_seq_item);
         item.rst_type = rst_type;
         item.value = ~active_level;
       	finish_item(item);
-
-        `uvm_info("seq_rst", $sformatf("%t: .. RESET[%0d] released...", $realtime, rst_type, duration), UVM_MEDIUM);
 
     endtask: body
 

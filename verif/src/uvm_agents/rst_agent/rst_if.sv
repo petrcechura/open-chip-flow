@@ -21,6 +21,6 @@ interface rst_if#(
     parameter int RST_COUNT = 1
 );
 
-    logic[RST_COUNT-1:0] rst;
+    wire[RST_COUNT-1:0] rst;
 
 endinterface: rst_if

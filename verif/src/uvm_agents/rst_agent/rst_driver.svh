@@ -11,6 +11,7 @@ class rst_driver#(parameter int RST_COUNT = 1) extends uvm_driver #(rst_seq_item
     rst_seq_item seq_item;
 
     task rst_assert;
+        `uvm_info("datalink", $sformatf("RST: %0d. reset set to %b", seq_item.rst_type, seq_item.value), UVM_MEDIUM);
         sline.rst[seq_item.rst_type] = seq_item.value;
     endtask
     
@@ -27,7 +28,7 @@ class rst_driver#(parameter int RST_COUNT = 1) extends uvm_driver #(rst_seq_item
                 end else begin
                     active_level = ~RST_ACTIVE_LEVEL_DEFAULT;
                 end
-            
+                
                 sline.rst[i] = active_level;
             end
 

@@ -17,7 +17,7 @@ package rst_agent_pkg;
         automatic rst_sequencer m_rst_sequencer;
         automatic rst_seq_rst_assert seq_rst;
         
-        seq_rst = rst_seq_rst_assert::type_id::create("rst_seq_rst_assert");
+        seq_rst = rst_seq_rst_assert::type_id::create("seq_rst");
         
         seq_rst.rst_set(_type, duration);
         

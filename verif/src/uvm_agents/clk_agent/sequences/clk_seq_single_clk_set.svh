@@ -26,8 +26,6 @@ class clk_seq_single_clk_set extends uvm_sequence #(clk_seq_item);
     task body;
       	automatic clk_seq_item item = clk_seq_item::type_id::create("frame");
 
-      	// Put clock on
-        `uvm_info("seq_clk", $sformatf("Setting clock period to %t", clk_per), 1);
       	start_item(item);
 
         item.clk_period = clk_per;

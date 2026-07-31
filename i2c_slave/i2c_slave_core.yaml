@@ -33,6 +33,9 @@ design:
         file: "../verif/src/uvm_agents/rst_agent/rst_agent.yaml"
         path: "design/verif/files"
 
+      # OCF report server
+      - "../verif/src/ocf_uvm_pkg.sv"
+
       # UVM test environment
       - "verif/env/i2c_slave_core_env_pkg.sv"
       - "verif/sequences/i2c_slave_core_seq_pkg.sv"
@@ -53,3 +56,4 @@ design:
       - "verif/env/"
       - "verif/sequences/"
       - "verif/tests/"
+      - "../verif/src"

@@ -14,33 +14,27 @@ class i2c_slave_core_seq_rw extends uvm_sequence #(i2c_seq_item);
 
         // Set clock running (20ns)
         // ------------------------
+        `uvm_info("application", "Setting a clock to 50 MHz.", UVM_MEDIUM);
         clk_set_period(i2c_slave_core_env_pkg::CLK_I2C_SLAVE_CORE, 20ns);
         clk_on(i2c_slave_core_env_pkg::CLK_I2C_SLAVE_CORE);
 
-        rst_assert(i2c_slave_core_env_pkg::RST_I2C_SLAVE_CORE, 20ns);
+        // Resetting DUT
+        // -------------
+        `uvm_info("application", "Resseting DUT for 20ns...", UVM_MEDIUM);
+        rst_assert(i2c_slave_core_env_pkg::RST_I2C_SLAVE_CORE, 200ns);
 
-      	// Reset DUT
-        // ---------
-        `uvm_info("seq_rw", "Resetting DUT...", 1);
-      	start_item(frame);
-
-        frame.rst_n = 1'b0;
-        frame.scl_period = 5;
-
-      	finish_item(frame);
-
-        #50ns;
+        #2000ns;
 
       	// Send custom data
-        // -------------------
-        `uvm_info("seq_rw", "Sending custom data...", 1);
+        // ----------------
+        `uvm_info("command", "Sending custom data...", UVM_MEDIUM);
       	start_item(frame);
 
         frame.addr = ADDR;
         frame.data.push_back(8'b10101010);
         frame.data.push_back(8'b11001100);
         frame.ack = 1'b1;
-        frame.scl_period = 5;
+        frame.scl_period = 30;
         frame.delay = 0;
         frame.rst_n = 1'b1;
       	finish_item(frame);

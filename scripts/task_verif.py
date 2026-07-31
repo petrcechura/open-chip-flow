@@ -90,6 +90,7 @@ class VerifTask(Task):
                                  f'--I{uvm_dir}',
                                  *[f'--I{i}' for i in includes],
                                  '-DUVM_NO_DPI',
+                                 '-DUSING_VERILATOR',
                                  uvm_file,
                                  *files],
                                  text=True)

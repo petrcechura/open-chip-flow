@@ -12,84 +12,83 @@ class i2c_driver extends uvm_driver #(i2c_seq_item);
     
     // data sent from MSB to LSB
     task send_packets;
-        `uvm_info("run_phase", "i2c_driver sending packets", UVM_LOW);
-
-        sline.sda_en = 1'b1;
-        sline.sda_i = 1'b0;
-        #1ns;
-        sline.sda_i = 1'b1;
-        #1ns;
-        sline.sda_i = 1'b0;
-        #1ns;
-        sline.sda_i = 1'b1;
-        sline.sda_en = 1'b0;
+        automatic bit cont = 1'b1;
 
         foreach(packets.data[i]) begin
+
+            if (!cont) begin
+                return; 
+            end
 
             fork
                 begin
                     sline.sda_en = 1'b1;
                     sline.scl_en = 1'b1;
 
+                    `uvm_info("datalink", "I2C: Startbit", UVM_MEDIUM);
                     // Start bit 
-                    sline.sda_i = 1'b0;
+                    sline.sda_o = 1'b0;
                     bitPeriod(0.25);
-                    sline.scl_i = 1'b0;
+                    sline.scl_o = 1'b0;
 
                     // Data
+                    `uvm_info("datalink", $sformatf("I2C: Sending %0d. frame [%b]", i, packets.data[i]), UVM_MEDIUM);
                     foreach(packets.data[i][j]) begin
                         fork
                             // SDA
                             begin
             					if (packets.data[i][j] === 1'b1) begin
                                 	bitPeriod(0.25);
-            						sline.sda_i = 1'b1;
+            						sline.sda_o = 1'b1;
             					end
             					else begin
                                 	bitPeriod(0.25);
-            						sline.sda_i = 1'b0;
+            						sline.sda_o = 1'b0;
             					end
                             end
                             // SCL
                             begin
-                                sline.scl_i = 1'b0;
+                                sline.scl_o = 1'b0;
                                 bitPeriod(0.5);
-                                sline.scl_i = 1'b1;
+                                sline.scl_o = 1'b1;
                                 bitPeriod(0.5);
                             end
                         join
                     end
 
-                    /* sample ACK bit to seq_item */
+                    // ACK / NACK
+                    // ----------
+                    `uvm_info("datalink", "I2C: Waiting for acknowledge...", UVM_MEDIUM);
                     if (packets.ack === 1'b1) begin
                         sline.sda_en = 1'b0;
-                        sline.scl_i = 1'b0;
+                        sline.scl_o = 1'b0;
                         bitPeriod(0.5);
 
-                        // NACK
-                        if (sline.sda_o != 1'b0) begin
-                            
-                            // TODO simple break causes internal cpp error
-                            //break;
-
+                        if (sline.sda_i === 1'b0) begin
+                            `uvm_info("datalink", "I2C: ACK sampled", UVM_MEDIUM);
+                        end else begin
+                            `uvm_info("datalink", "I2C: NACK sampled", UVM_MEDIUM);
+                            cont = 1'b0;
                         end
 
-                        sline.scl_i = 1'b1;
+                        sline.scl_o = 1'b1;
                         bitPeriod(0.5);
                         sline.sda_en = 1'b0;
                     end
-
+                    
+                    // Stopbit
+                    `uvm_info("datalink", "I2C: Stopbit", UVM_MEDIUM);
                     fork
                         begin
-                            sline.sda_i = 1'b0;
+                            sline.sda_o = 1'b0;
                             bitPeriod(0.5);
-                            sline.sda_i = 1'b1;
+                            sline.sda_o = 1'b1;
                         end
                     
                         begin
-                            sline.scl_i = 1'b0;
+                            sline.scl_o = 1'b0;
                             bitPeriod(0.25);
-                            sline.scl_i = 1'b1;
+                            sline.scl_o = 1'b1;
                         end
                     join
                 end
@@ -119,17 +118,16 @@ class i2c_driver extends uvm_driver #(i2c_seq_item);
     task run_phase(uvm_phase phase);
         integer bitPtr = 0;
 
-        `uvm_info("run_phase", "i2c_driver running", UVM_LOW);
         begin
 
             sline.sda_en = 1'b0;
             sline.scl_en = 1'b0;
-            sline.sda_i = 1'b1;
-            sline.scl_i = 1'b1;
+            sline.sda_o = 1'b1;
+            sline.scl_o = 1'b1;
     
             forever begin
                 seq_item_port.get_next_item(packets);
-                `uvm_info("run_phase", "i2c_driver got new item", UVM_LOW);
+
                 // Variable delay
                 repeat(packets.delay) begin
                     @(posedge sline.clk);

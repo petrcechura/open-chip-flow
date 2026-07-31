@@ -21,6 +21,6 @@ interface clk_if#(
     parameter int CLK_COUNT = 1
 );
 
-    logic[CLK_COUNT-1:0] clk;
+    wire[CLK_COUNT-1:0] clk;
 
 endinterface: clk_if

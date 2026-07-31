@@ -1,6 +1,8 @@
 `include "uvm.sv"
 `include "uvm_macros.svh"
 
+`define USING_VERILATOR
+
 module i2c_slave_core_tb;
 
     import uvm_pkg::*;
@@ -15,8 +17,17 @@ module i2c_slave_core_tb;
 
     // Connect interfaces
     // ------------------
+`ifndef USING_VERILATOR
     assign i2c_slave_core_ifc.sda = i2c_ifc.sda_wire;
     assign i2c_slave_core_ifc.scl = i2c_ifc.scl_wire;
+`else
+    assign sda_t[1] = i2c_ifc.sda_en;
+    assign sda_i[1] = i2c_ifc.sda_i;
+    assign sda_o[1] = i2c_ifc.sda_o;
+    assign scl_t[1] = i2c_ifc.scl_en;
+    assign scl_i[1] = i2c_ifc.scl_i;
+    assign scl_o[1] = i2c_ifc.scl_o;
+`endif
     assign i2c_slave_core_ifc.clk = clk_ifc.clk;
     assign i2c_slave_core_ifc.rst_n = rst_ifc.rst;
     assign i2c_ifc.clk = clk_ifc.clk[i2c_slave_core_env_pkg::CLK_I2C_SLAVE_CORE];
@@ -27,14 +38,38 @@ module i2c_slave_core_tb;
     i2c_slave_core dut (
         .clk(   i2c_slave_core_ifc.clk),
         .arst(  i2c_slave_core_ifc.rst_n),
+`ifndef USING_VERILATOR
         .sda(   i2c_slave_core_ifc.sda),
         .scl(   i2c_slave_core_ifc.scl),
+`else
+        .sda_t(sda_t[0]),
+        .sda_o(sda_o[0]),
+        .sda_i(sda_i[0]),
+        .scl_t(scl_t[0]),
+        .scl_o(scl_o[0]),
+        .scl_i(scl_i[0]),
+`endif
 
-        .tx_start(  i2c_slave_core_ifc.tx_start),
         .data_in(   i2c_slave_core_ifc.data_in),
         .data_out(  i2c_slave_core_ifc.data_out),
-        .status(    i2c_slave_core_ifc.status)
+        .tx_start(  i2c_slave_core_ifc.tx_start),
+        .rx_done(   i2c_slave_core_ifc.rx_done),
+        .ack_in(1'b0)
     );
+
+`ifdef USING_VERILATOR
+    logic[1:0] scl_t, scl_o, scl_i;
+    logic[1:0] sda_t, sda_o, sda_i;
+    i2c_bus#(.DEVICE_COUNT(2)) i2c_bus_i
+    (
+        .sda_i(sda_i),
+        .sda_t(sda_t),
+        .sda_o(sda_o),
+        .scl_i(scl_i),
+        .scl_t(scl_t),
+        .scl_o(scl_o)
+    );
+`endif
 
     // Test run
     // -----------------------

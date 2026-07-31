@@ -21,8 +21,8 @@ module rs_det #(
     assign sig_out = ff_q[FF_COUNT-2];
 
     if (EDGE_DETECT) begin : g_edge
-        assign rise_edge = ff_q[FF_COUNT-1] & ~ff_q[FF_COUNT-2];
-        assign fall_edge = ~ff_q[FF_COUNT-1] & ff_q[FF_COUNT-2];
+        assign fall_edge = ff_q[FF_COUNT-1] & ~ff_q[FF_COUNT-2];
+        assign rise_edge = ~ff_q[FF_COUNT-1] & ff_q[FF_COUNT-2];
     end
     else begin : g_no_edge
         assign rise_edge = 1'b0;

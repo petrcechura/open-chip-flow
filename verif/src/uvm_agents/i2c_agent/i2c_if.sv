@@ -24,15 +24,19 @@ interface i2c_if;
     wire clk;
     wire rst;
     logic[6:0] addr;
-    logic sda_i, sda_o, sda_en;
-    logic scl_i, scl_o, scl_en;
+    logic sda_o, sda_en;
+    logic scl_o, scl_en;
+    wire scl_i;
+    wire sda_i;
 
+
+`ifndef USING_VERILATOR
     pullup pu_sda(sda_wire);
     pullup pu_scl(scl_wire);
-
-    assign sda_wire = sda_en ? sda_i : 1'bZ;
-    assign scl_wire = scl_en ? scl_i : 1'bZ;
-    assign sda_o = sda_wire;
-    assign scl_o = scl_wire;
+    assign sda_wire = sda_en ? sda_o : 1'bZ;
+    assign scl_wire = scl_en ? scl_o : 1'bZ;
+    assign sda_i = sda_wire;
+    assign scl_i = scl_wire;
+`endif
 
 endinterface: i2c_if

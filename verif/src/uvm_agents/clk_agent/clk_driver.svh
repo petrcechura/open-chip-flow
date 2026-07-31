@@ -25,7 +25,6 @@ class clk_driver#(parameter int CLK_COUNT = 1) extends uvm_driver #(clk_seq_item
                 end
 
                 #(clk_periods[clk_type]/2);
-                //$display("%t: sline.clk: %b", $realtime, sline.clk[clk_type]);
             end
         join_none
     endtask
@@ -35,11 +34,14 @@ class clk_driver#(parameter int CLK_COUNT = 1) extends uvm_driver #(clk_seq_item
             `uvm_fatal("run_phase", "An attempt to set up a clock out of interface bounds!")
         end
         
-        $display("%t: item.. en: %b, period: %t, type: %d", $realtime, seq_item.clk_en, seq_item.clk_period, seq_item.clk_type);
-        if (seq_item.clk_period_set)
+        if (seq_item.clk_period_set) begin
+            `uvm_info("datalink", $sformatf("CLK: Clock (%0d) set to %0t ns", seq_item.clk_type, seq_item.clk_period), UVM_MEDIUM);
             clk_periods[seq_item.clk_type] = seq_item.clk_period;
-        else 
+        end
+        else begin 
+            `uvm_info("datalink", $sformatf("CLK: Clock (%0d) turned %s", seq_item.clk_type, (seq_item.clk_en ? "on" : "off")), UVM_MEDIUM);
             clk_enables[seq_item.clk_type] = seq_item.clk_en;
+        end
     endfunction
     
     task run_phase(uvm_phase phase);
